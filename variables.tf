@@ -13,20 +13,7 @@ variable aws_region {
   type = string
   }
 
-variable base_domain {
+variable app_domain {
   description = "Base domain for the whole application. A subdomain of an already established domain."
-  type = string
-  }
-
-variable gcp_project {
-  description = "Name of the GCP project to use"
-  type = string
-}
-variable gcp_region {
-  description = "GCP Region in which to deploy the application"
-  type = string
-}
-variable gcp_user {
-  description = "GCP user for terraform to use. Probably the same used to authenticate on GCP."
   type = string
   }

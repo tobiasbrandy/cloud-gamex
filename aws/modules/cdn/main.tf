@@ -1,3 +1,6 @@
+# TODO(tobi): Que solo el cdn pueda acceder al lbfrontlbfront
+# TODO(tobi): Si se usa www hay problemas de permisos, la policy dice que solo cloudfront lee pega a site
+# TODO(tobi): Logging a S3
 
 data "aws_cloudfront_cache_policy" "disabled" {
     name = "Managed-CachingDisabled"
@@ -7,18 +10,13 @@ data "aws_cloudfront_cache_policy" "optimized" {
     name = "Managed-CachingOptimized"
 }
 
-# data "aws_cloudfront_origin_access_identity" "s3" {
-#   id = var.OAI_id
-# }
+resource "aws_cloudfront_distribution" "main" {
 
-resource "aws_cloudfront_distribution" "redes" {
-  # Si se usa www hay problemas de permisos, la policy dice que solo cloudfront lee pega a site
   origin {
     domain_name = var.bucket_domain_name
     origin_id   = var.s3_origin_id
 
     s3_origin_config {
-      # origin_access_identity = data.aws_cloudfront_origin_access_identity.s3.cloudfront_access_identity_path
       origin_access_identity = var.OAI.cloudfront_access_identity_path
     }
   }
@@ -59,7 +57,7 @@ resource "aws_cloudfront_distribution" "redes" {
 
   # Cache behavior with precedence 0
   ordered_cache_behavior {
-    path_pattern     = "/api/*"
+    path_pattern     = "/api/*" // TODO(tobi): Descablear
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
     cache_policy_id  = data.aws_cloudfront_cache_policy.disabled.id
@@ -83,10 +81,8 @@ resource "aws_cloudfront_distribution" "redes" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = length(var.aliases) == 0
-
     acm_certificate_arn       = var.certificate_arn
-    minimum_protocol_version  = length(var.aliases) > 0 ? "TLSv1.2_2021" : null
-    ssl_support_method        = length(var.aliases) > 0 ? "sni-only" : null
+    minimum_protocol_version  = "TLSv1.2_2021"
+    ssl_support_method        = "sni-only"
   }
 }

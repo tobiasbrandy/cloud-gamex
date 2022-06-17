@@ -10,11 +10,6 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.18.0"
     }
-
-    google = {
-      source = "hashicorp/google"
-      version = "~> 4.24.0"
-    }
   }
 }
 
@@ -22,40 +17,10 @@ provider "aws" {
   region = var.aws_region
 }
 
-provider "google" {
-  project = var.gcp_project
-  region  = var.gcp_region
-  zone    = local.gcp_default_zone
-}
-
-locals {
-  app_domain          = "${local.app_name}.${var.base_domain}"
-  pri_deploy_domain   = "${local.pri_app_deploy}.${var.base_domain}"
-  sec_deploy_domain   = "${local.sec_app_deploy}.${var.base_domain}"
-
-  s3_origin_id        = "ice-cream-static-site"
-  api_origin_id       = "nginx-api"
-
-  gcp_default_zone    = "${var.gcp_region}-a"
-}
-
-module gcp {
-  source = "./gcp"
-
-  my_ips = var.my_ips
-  gcp_project       = var.gcp_project
-  gcp_region        = var.gcp_region
-  bucket_region     = upper(var.gcp_region)
-  ss_src            = local.static_resources
-  gcp_default_zone  = local.gcp_default_zone
-  gcp_user          = var.gcp_user
-}
-
 module "certificate" {
   source = "./aws/modules/certificate"
 
-  base_domain   = var.base_domain
-  app_subdomain = local.app_name
+  app_domain   = var.app_domain
 }
 
 module "vpc" {
@@ -66,8 +31,8 @@ module "vpc" {
     natgw       = true
 }
 
-resource "aws_key_pair" "redes_key" {
-  key_name   = local.ssh_key_name
+resource "aws_key_pair" "all_ec2" {
+  key_name   = "all_ec2"
   public_key = file(var.ssh_key_path)
 }
 
@@ -76,7 +41,7 @@ module "bastion" {
 
     vpc_id        = module.vpc.vpc_id
     subnets       = module.vpc.public_subnets_ids
-    key_name      = local.ssh_key_name
+    key_name      = aws_key_pair.all_ec2.id
     ami           = local.aws_ec2_ami
     my_ips        = var.my_ips
     instance_type = local.aws_ec2_type
@@ -94,14 +59,14 @@ module "web_server" {
     private_subnets = module.vpc.private_subnets_ids
     public_subnets  = module.vpc.public_subnets_ids
     user_data       = data.template_file.web_server_ud.rendered
-    key_name        = local.ssh_key_name
+    key_name        = aws_key_pair.all_ec2.id
     ami             = local.aws_ec2_ami
     my_ips          = var.my_ips
     instance_type   = local.aws_ec2_type
 }
 
 resource "aws_cloudfront_origin_access_identity" "cdn" {
-  comment = local.s3_origin_id
+  comment = "Origin access for CDN to the frontend"
 }
 
 module "static_site" {
@@ -115,23 +80,18 @@ module "cdn" {
   source = "./aws/modules/cdn"
 
   OAI                   = aws_cloudfront_origin_access_identity.cdn
-  s3_origin_id          = local.s3_origin_id
-  api_origin_id         = local.api_origin_id
+  s3_origin_id          = "frontend"
+  api_origin_id         = "nginx-api"
   api_domain_name       = module.web_server.domain_name
   bucket_domain_name    = module.static_site.domain_name
-  aliases               = ["www.${local.app_domain}", local.app_domain, local.pri_deploy_domain]
+  aliases               = [var.app_domain, "*.${var.app_domain}"]
   certificate_arn       = module.certificate.arn
 }
 
 module "dns" {
   source = "./aws/modules/dns"
 
-  base_domain                   = var.base_domain
-  app_subdomain                 = local.app_name
-  primary_subdomain             = local.pri_app_deploy
-  secondary_subdomain           = local.sec_app_deploy
-  app_primary_health_check_path = "/api/time"
-  pri_deploy_cloudfront         = module.cdn.cloudfront_distribution
-  sec_deploy_name_servers       = module.gcp.gcp_dns_name_servers
+  app_domain = var.app_domain
+  cdn         = module.cdn.distribution
 }
 
