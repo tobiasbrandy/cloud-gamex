@@ -19,3 +19,9 @@ output "app_subnets_ids" {
 output "db_subnets_ids" {
   value = aws_subnet.db[*].id
 }
+
+output "privateDB_subnets_ids" {
+  value = [
+    for k, v in aws_subnet.db : v.id
+  ]
+}

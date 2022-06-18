@@ -116,3 +116,18 @@ module "dns" {
   app_domain  = var.app_domain
   cdn         = module.cdn.distribution
 }
+
+
+module "persistance" {
+  source = "./aws/modules/persistance"
+  
+  cluster_instance_count = 2
+  master_username = "m_username"
+  master_password = "password"
+  name = "documentDB_instance"
+  vpc_id = module.vpc.vpc_id
+  persistance_subnets =  module.vpc.privateDB_subnets_ids
+
+ 
+}
+
