@@ -18,6 +18,10 @@ provider "aws" {
   region = var.aws_region
 }
 
+data "aws_iam_role" "main" {
+  name = var.authorized_role
+}
+
 module "certificate" {
   source = "./aws/modules/certificate"
 
@@ -57,7 +61,7 @@ module "web_server" {
 
     vpc_id          = module.vpc.vpc_id
     vpc_cidr        = module.vpc.vpc_cidr
-    private_subnets = module.vpc.private_subnets_ids
+    private_subnets = module.vpc.app_subnets_ids
     public_subnets  = module.vpc.public_subnets_ids
     user_data       = data.template_file.web_server_ud.rendered
     key_name        = aws_key_pair.all_ec2.id
@@ -92,7 +96,7 @@ module "cdn" {
 module "dns" {
   source = "./aws/modules/dns"
 
-  app_domain = var.app_domain
+  app_domain  = var.app_domain
   cdn         = module.cdn.distribution
 }
 

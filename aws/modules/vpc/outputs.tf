@@ -1,5 +1,3 @@
-# Output variable definitions
-
 output "vpc_id" {
   description = "VPC ID"
   value       = aws_vpc.main.id
@@ -11,13 +9,13 @@ output "vpc_cidr" {
 }
 
 output "public_subnets_ids" {
-  value = [
-    for k, v in aws_subnet.public : v.id
-  ]
+  value = aws_subnet.public[*].id
 }
 
-output "private_subnets_ids" {
-  value = [
-    for k, v in aws_subnet.private : v.id
-  ]
+output "app_subnets_ids" {
+  value = aws_subnet.app[*].id
+}
+
+output "db_subnets_ids" {
+  value = aws_subnet.db[*].id
 }

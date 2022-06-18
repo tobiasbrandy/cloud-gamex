@@ -6,7 +6,7 @@ resource "aws_vpc" "main" {
   instance_tenancy     = "default"
 
   tags = {
-    Name = "main"
+    name = "main"
   }
 }
 
@@ -21,17 +21,28 @@ resource "aws_subnet" "public" {
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
-    Name = "public_${count.index}"
+    name = "public_${count.index}"
   }
 }
 
-resource "aws_subnet" "private" {
+resource "aws_subnet" "app" {
   count             = var.zones_count
   cidr_block        = cidrsubnet(local.private_cidr, ceil(log(var.zones_count, 2)), count.index)
   vpc_id            = aws_vpc.main.id
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
-    Name = "private_${count.index}"
+    name = "app_${count.index}"
+  }
+}
+
+resource "aws_subnet" "db" {
+  count             = var.zones_count
+  cidr_block        = cidrsubnet(local.database_cidr, ceil(log(var.zones_count, 2)), count.index)
+  vpc_id            = aws_vpc.main.id
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+
+  tags = {
+    name = "db_${count.index}"
   }
 }
