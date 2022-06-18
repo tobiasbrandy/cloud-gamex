@@ -1,8 +1,8 @@
 # Input variable definitions
 
-variable "authorized_IAM_arn" {
-  description = "Authorized terraform users IAM arn"
-  type        = list(string)
+variable "authorized_role" {
+  description = "Authorized role name for bucket and encryption key creation"
+  type        = string
 }
 
 # variable "root_IAM_arn" {

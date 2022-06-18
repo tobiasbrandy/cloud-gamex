@@ -17,3 +17,9 @@ variable app_domain {
   description = "Base domain for the whole application. A subdomain of an already established domain."
   type = string
   }
+
+  variable authorized_role {
+  description = "Name of the role to use throughout the application deployment. We only support a single super-user."
+  type = string
+  }
+

@@ -1,4 +1,4 @@
-// TODO(tobi): Encriptacion y locking
+// TODO(tobi): Locking
 
 terraform {
   required_version = "~> 1.2.0"
@@ -19,6 +19,20 @@ resource "aws_s3_bucket" "state" {
   bucket_prefix = "state"
 }
 
+data "aws_iam_role" "main" {
+  name = var.authorized_role
+}
+
+resource "aws_kms_key" "state" {
+  description             = "state"
+  deletion_window_in_days = 10
+}
+
+resource "aws_kms_alias" "state" {
+  name          = "alias/tf_state_key"
+  target_key_id = aws_kms_key.state.key_id
+}
+
 resource "aws_s3_bucket_public_access_block" "state" {
   bucket = aws_s3_bucket.state.id
 
@@ -35,7 +49,7 @@ data "aws_iam_policy_document" "bucket" {
 
     principals {
       type        = "AWS"
-      identifiers = var.authorized_IAM_arn
+      identifiers = [data.aws_iam_role.main.arn]
     }
   }
   statement {
@@ -44,7 +58,7 @@ data "aws_iam_policy_document" "bucket" {
 
     principals {
       type        = "AWS"
-      identifiers = var.authorized_IAM_arn
+      identifiers = [data.aws_iam_role.main.arn]
     }
   }
 }
