@@ -1,6 +1,7 @@
 
 resource "aws_iam_policy" "policy_rds" {
-  name = "policy-replication"
+  count = length(var.persistance_subnets)
+  name = "replication-policy-${count.index}"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -8,7 +9,9 @@ resource "aws_iam_policy" "policy_rds" {
       {
         Action   = ["rds:CreateDBInstanceReadReplica"]
         Effect   = "Allow"
-        Resource = "*"
+        Resource = [
+          "arn:aws:rds:::replic-${count.index}"
+        ]
       },
     ]
   })
@@ -26,15 +29,15 @@ resource "aws_security_group_rule" "rds_out" {
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [var.vpc_cidr]
   security_group_id = aws_security_group.rds.id
 }
 
 resource "aws_security_group_rule" "rds_in" {
   type              = "ingress"
-  from_port         = 3306
-  to_port           = 3306
+  from_port         =  5432 
+  to_port           =  5432 
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [var.vpc_cidr]
   security_group_id = aws_security_group.rds.id
 }
