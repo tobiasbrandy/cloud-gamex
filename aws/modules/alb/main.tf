@@ -1,16 +1,16 @@
 resource "aws_lb" "main" {
-  name               = "app-alb"
-  internal           = false
+  name               = var.name
+  internal           = var.internal
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_lb.id]
-  subnets            = var.public_subnets
+  subnets            = var.subnets
 }
 
 #Dynamically create the alb target groups for app services
 resource "aws_alb_target_group" "services" {
   for_each = var.services
 
-  name        = "${each.key}-tg"
+  name        = "${each.key}-${var.internal ? "private" : "public"}-tg"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -70,14 +70,19 @@ resource "aws_alb_listener_rule" "services" {
   
   condition {
     path_pattern {
-      values = ["${var.path_prefix}/${each.key}"]
+      // TODO(tobi): Arreglar
+      values = var.internal ? ["${var.path_prefix}/${each.key}", "${var.path_prefix}/${each.key}/*", "/${each.key}", "/${each.key}/*"] : ["${var.path_prefix}/${each.key}", "${var.path_prefix}/${each.key}/*"]
     }
   }
 
-  condition {
-    http_header {
-      http_header_name = var.cdn_secret_header
-      values           = [var.cdn_secret]
+  dynamic "condition" {
+    for_each = var.internal ? [] : [1] # Solo se genera la condition si el alb es publico
+
+    content {
+      http_header {
+        http_header_name = var.cdn_secret_header
+        values           = [var.cdn_secret]
+      }
     }
   }
 }
@@ -97,33 +102,36 @@ resource "aws_alb_listener_rule" "services" {
 # }
 
 resource "aws_security_group" "ecs_lb" {
-  name   = "app-alb"
+  name   = var.name
   vpc_id = var.vpc_id
-}
 
-resource "aws_security_group_rule" "ecs_lb_out" {
-  type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ecs_lb.id
-}
+  # ingress {
+  #   from_port         = 0
+  #   to_port           = 0
+  #   protocol          = "icmp"
+  #   # cidr_blocks       = [var.internal ? var.vpc_cidr : "0.0.0.0/0"]
+  #   cidr_blocks       = ["0.0.0.0/0"]
+  # }
 
-resource "aws_security_group_rule" "ecs_lb_in_icmp" {
-  type              = "ingress"
-  from_port         = -1
-  to_port           = -1
-  protocol          = "icmp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ecs_lb.id
-}
+  # ingress {
+  #   from_port         = 0
+  #   to_port           = 0
+  #   protocol          = "tcp"
+  #   # cidr_blocks       = [var.internal ? var.vpc_cidr : "0.0.0.0/0"] // TODO(tobi)
+  #   cidr_blocks       = ["0.0.0.0/0"]
+  # }
 
-resource "aws_security_group_rule" "ecs_lb_in_http" {
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ecs_lb.id
+  ingress {
+    from_port         = 0
+    to_port           = 0
+    protocol          = "-1"
+    cidr_blocks       = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port         = 0
+    to_port           = 0
+    protocol          = "-1"
+    cidr_blocks       = ["0.0.0.0/0"]
+  }
 }

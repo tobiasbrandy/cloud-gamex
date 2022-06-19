@@ -1,6 +1,6 @@
-output "domain_name" {
-  description = "Domain name of load balancer"
-  value       = aws_lb.main.dns_name
+output "main" {
+  description = "Load balancer created"
+  value       = aws_lb.main
 }
 
 output "services_target_group" {

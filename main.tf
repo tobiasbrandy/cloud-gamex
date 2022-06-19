@@ -66,17 +66,35 @@ module "alb_cdn_secret" {
   }
 }
 
-module "alb" {
+module "public_alb" {
   source = "./aws/modules/alb"
 
+  name              = "app-alb"
+  internal          = false
+
   vpc_id            = module.vpc.vpc_id
-  public_subnets    = module.vpc.public_subnets_ids
+  vpc_cidr          = module.vpc.vpc_cidr
+  subnets           = module.vpc.public_subnets_ids
 
   services          = module.services.definitions
   path_prefix       = "/api"
 
   cdn_secret_header = local.alb_cdn_secret_header
   cdn_secret        = module.alb_cdn_secret.value
+}
+
+module "service_discovery_alb" {
+  source = "./aws/modules/alb"
+
+  name              = "discovery-alb"
+  internal          = true
+
+  vpc_id            = module.vpc.vpc_id
+  vpc_cidr          = module.vpc.vpc_cidr
+  subnets           = module.vpc.app_subnets_ids
+
+  services          = module.services.definitions
+  path_prefix       = "/api"
 }
 
 module "ecs" {
@@ -89,7 +107,7 @@ module "ecs" {
   task_role_arn         = data.aws_iam_role.main.arn
   execution_role_arn    = data.aws_iam_role.main.arn
   
-  alb_target_groups     = module.alb.services_target_group
+  alb_target_groups     = module.public_alb.services_target_group
 }
 
 module "cdn" {
@@ -100,7 +118,7 @@ module "cdn" {
   frontend_domain_name  = module.static_site.domain_name
 
   api_origin_id         = "api"
-  api_domain_name       = module.alb.domain_name
+  api_domain_name       = module.public_alb.main.dns_name
   api_path_pattern      = "/api/*"
 
   aliases               = [var.app_domain, "*.${var.app_domain}"]
@@ -115,6 +133,11 @@ module "dns" {
 
   app_domain  = var.app_domain
   cdn         = module.cdn.distribution
+
+  internal_vpc_domain = "private.cloud.com"
+  vpc_id              = module.vpc.vpc_id
+  services_alb        = module.service_discovery_alb.main
+  services_alb_domain = "services.private.cloud.com"
 }
 
 
