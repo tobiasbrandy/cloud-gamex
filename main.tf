@@ -123,7 +123,7 @@ module "persistance" {
   
   vpc_id = module.vpc.vpc_id
   persistance_subnets =  module.vpc.privateDB_subnets_ids
+  vpc_cidr = local.aws_vpc_network
 
- 
 }
 

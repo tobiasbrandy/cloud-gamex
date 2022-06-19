@@ -14,4 +14,8 @@ variable "skip_final_snapshot" {
   type    = bool
 }
 
+variable "vpc_cidr" {
+  type = string
+}
+
 
