@@ -42,12 +42,6 @@ module "static_site" {
   bucket_access_OAI = [aws_cloudfront_origin_access_identity.cdn.iam_arn]
 }
 
-# Secreto entre CDN y public ALB
-// TODO(tobi): Rotar secreto (requiere una lambda)
-resource "aws_secretsmanager_secret" "example" {
-  name = "cdn-alb-secret"
-}
-
 module "services" {
   source = "./services"
 }
@@ -59,17 +53,43 @@ module "registry" {
   services_location = "services"
 }
 
+# Secreto entre CDN y public ALB
+// TODO(tobi): Rotar secreto (requiere una lambda)
+module "alb_cdn_secret" {
+  source = "./aws/modules/secret"
+
+  name_prefix = "alb-cdn-secret-"
+  description = "Secret between CDN and ALB"
+  length      = 24
+  keepers     = {
+    header = local.alb_cdn_secret_header
+  }
+}
+
+module "alb" {
+  source = "./aws/modules/alb"
+
+  vpc_id            = module.vpc.vpc_id
+  public_subnets    = module.vpc.public_subnets_ids
+
+  services          = module.services.definitions
+  path_prefix       = "/api"
+
+  cdn_secret_header = local.alb_cdn_secret_header
+  cdn_secret        = module.alb_cdn_secret.value
+}
+
 module "ecs" {
   source = "./aws/modules/ecs"
 
   vpc_id                = module.vpc.vpc_id
   app_subnets           = module.vpc.app_subnets_ids
-  public_subnets        = module.vpc.public_subnets_ids
   services              = module.services.definitions
   service_images        = module.registry.service_images
   task_role_arn         = data.aws_iam_role.main.arn
   execution_role_arn    = data.aws_iam_role.main.arn
-  path_prefix           = "/api"
+  
+  alb_target_groups     = module.alb.services_target_group
 }
 
 module "cdn" {
@@ -80,11 +100,14 @@ module "cdn" {
   frontend_domain_name  = module.static_site.domain_name
 
   api_origin_id         = "api"
-  api_domain_name       = module.ecs.domain_name
+  api_domain_name       = module.alb.domain_name
   api_path_pattern      = "/api/*"
 
   aliases               = [var.app_domain, "*.${var.app_domain}"]
   certificate_arn       = module.certificate.arn
+
+  alb_secret_header     = local.alb_cdn_secret_header
+  alb_secret            = module.alb_cdn_secret.value
 }
 
 module "dns" {

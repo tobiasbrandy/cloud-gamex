@@ -8,19 +8,9 @@ variable "public_subnets" {
   type        = list(string)
 }
 
-variable "app_subnets" {
-  description = "Application subnets"
-  type        = list(string)
-}
-
 variable "services" {
   description = "Services definition by name"
   type        = map(map(any))
-}
-
-variable "service_images" {
-  description = "Images of services to deploy by name"
-  type        = map(string)
 }
 
 variable "path_prefix" {
@@ -28,13 +18,13 @@ variable "path_prefix" {
   type        = string
 }
 
-variable "execution_role_arn" {
-  description = "Arn of role for service execution"
+variable "cdn_secret_header" {
+  description = "Header where secret between ALB and CDN travels"
   type        = string
 }
 
-variable "task_role_arn" {
-  description = "Arn of role for service task"
+variable "cdn_secret" {
+  description = "Secret between ALB and CDN"
   type        = string
 }
 

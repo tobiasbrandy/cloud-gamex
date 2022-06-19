@@ -1,5 +1,5 @@
 resource "aws_lb" "main" {
-  name               = "ecs-lb"
+  name               = "app-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_lb.id]
@@ -49,9 +49,9 @@ resource "aws_alb_listener" "http" {
 
     fixed_response {
       content_type = "application/json"
-      status_code  = "404"
+      status_code  = "403"
       message_body = jsonencode({
-        error = "No service defined for route"
+        error = "Forbidden"
       })
     }
   }
@@ -73,6 +73,13 @@ resource "aws_alb_listener_rule" "services" {
       values = ["${var.path_prefix}/${each.key}"]
     }
   }
+
+  condition {
+    http_header {
+      http_header_name = var.cdn_secret_header
+      values           = [var.cdn_secret]
+    }
+  }
 }
 
 # resource "aws_alb_listener" "https" {
@@ -90,12 +97,8 @@ resource "aws_alb_listener_rule" "services" {
 # }
 
 resource "aws_security_group" "ecs_lb" {
-  name   = "ecs-lb"
+  name   = "app-alb"
   vpc_id = var.vpc_id
-
-  tags = {
-    name = "ecs-lb"
-  }
 }
 
 resource "aws_security_group_rule" "ecs_lb_out" {

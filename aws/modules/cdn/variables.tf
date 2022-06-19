@@ -30,3 +30,13 @@ variable "aliases" {
 variable "certificate_arn" {
   type        = string
 }
+
+variable "alb_secret_header" {
+  description = "Header where secret between ALB and CDN travels"
+  type        = string
+}
+
+variable "alb_secret" {
+  description = "Secret between ALB and CDN"
+  type        = string
+}

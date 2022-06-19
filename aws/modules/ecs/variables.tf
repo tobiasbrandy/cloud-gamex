@@ -3,11 +3,6 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "public_subnets" {
-  description = "Public subnets"
-  type        = list(string)
-}
-
 variable "app_subnets" {
   description = "Application subnets"
   type        = list(string)
@@ -23,11 +18,6 @@ variable "service_images" {
   type        = map(string)
 }
 
-variable "path_prefix" {
-  description = "Path prefix for all services"
-  type        = string
-}
-
 variable "execution_role_arn" {
   description = "Arn of role for service execution"
   type        = string
@@ -36,5 +26,10 @@ variable "execution_role_arn" {
 variable "task_role_arn" {
   description = "Arn of role for service task"
   type        = string
+}
+
+variable "alb_target_groups" {
+  description = "Target groups of ALB redirecting to services"
+  type        = map
 }
 
