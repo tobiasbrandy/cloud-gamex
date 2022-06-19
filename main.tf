@@ -116,3 +116,14 @@ module "dns" {
   app_domain  = var.app_domain
   cdn         = module.cdn.distribution
 }
+
+
+module "persistance" {
+  source = "./aws/modules/persistance"
+  
+  vpc_id = module.vpc.vpc_id
+  persistance_subnets =  module.vpc.privateDB_subnets_ids
+
+ 
+}
+
