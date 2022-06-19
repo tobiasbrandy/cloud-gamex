@@ -13,11 +13,11 @@ data "aws_cloudfront_cache_policy" "optimized" {
 resource "aws_cloudfront_distribution" "main" {
 
   origin {
-    domain_name = var.bucket_domain_name
-    origin_id   = var.s3_origin_id
+    domain_name = var.frontend_domain_name
+    origin_id   = var.frontend_origin_id
 
     s3_origin_config {
-      origin_access_identity = var.OAI.cloudfront_access_identity_path
+      origin_access_identity = var.frontend_OAI.cloudfront_access_identity_path
     }
   }
   
@@ -48,7 +48,7 @@ resource "aws_cloudfront_distribution" "main" {
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = var.s3_origin_id
+    target_origin_id = var.frontend_origin_id
     cache_policy_id  = data.aws_cloudfront_cache_policy.optimized.id
 
     viewer_protocol_policy = "redirect-to-https"
@@ -57,7 +57,7 @@ resource "aws_cloudfront_distribution" "main" {
 
   # Cache behavior with precedence 0
   ordered_cache_behavior {
-    path_pattern     = "/api/*" // TODO(tobi): Descablear
+    path_pattern     = var.api_path_pattern
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
     cache_policy_id  = data.aws_cloudfront_cache_policy.disabled.id

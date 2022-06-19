@@ -1,10 +1,13 @@
-# Input variable definitions
-variable "OAI" {
+variable "frontend_OAI" {
   description = "OAI"
   type        = map(any)
 }
 
-variable "s3_origin_id" {
+variable "frontend_origin_id" {
+  type        = string
+}
+
+variable "frontend_domain_name" {
   type        = string
 }
 
@@ -16,7 +19,7 @@ variable "api_domain_name" {
   type        = string
 }
 
-variable "bucket_domain_name" {
+variable "api_path_pattern" {
   type        = string
 }
 
@@ -26,5 +29,4 @@ variable "aliases" {
 
 variable "certificate_arn" {
   type        = string
-  # default     = null
 }
