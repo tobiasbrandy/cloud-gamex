@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, FastAPI
 
 # TODO(tobi): Usar ApiRouter
@@ -18,6 +19,10 @@ def home():
 @app.get("/fastapi2")
 def private_home():
     return "Private FastApi2 says: Hello World Privately!"
+
+@app.get("/api/fastapi2/test/env")
+def test_env():
+    return os.getenv("DB_ADDRESS")
 
 # app.include_router(public)
 # app.include_router(private)

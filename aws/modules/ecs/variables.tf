@@ -33,3 +33,9 @@ variable "alb_target_groups" {
   type        = map
 }
 
+variable "environment" {
+  description = "Environment variables available to all services. List of name/value pairs."
+  type        = list(map(string))
+  default     = null
+}
+

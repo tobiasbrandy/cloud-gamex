@@ -108,6 +108,26 @@ module "ecs" {
   execution_role_arn    = data.aws_iam_role.main.arn
   
   alb_target_groups     = module.public_alb.services_target_group
+
+  environment = [
+    {name = "DB_USER",      value = var.db_user},
+    {name = "DB_PASSWORD",  value = var.db_pass},
+    {name = "DB_ADDRESS",   value = module.rds.db_address},
+    {name = "DB_PORT",      value = local.db_port},
+    {name = "DB_NAME",      value = local.db_name},
+  ]
+}
+
+module "rds" {
+  source = "./aws/modules/rds"
+
+  vpc_id      = module.vpc.vpc_id
+  vpc_cidr    = module.vpc.vpc_cidr
+  db_subnets  = module.vpc.db_subnets_ids
+  db_name     = local.db_name
+  db_user     = var.db_user
+  db_pass     = var.db_pass
+  db_port     = local.db_port
 }
 
 module "cdn" {
@@ -139,14 +159,3 @@ module "dns" {
   services_alb        = module.service_discovery_alb.main
   services_alb_domain = "services.private.cloud.com"
 }
-
-
-module "persistance" {
-  source = "./aws/modules/persistance"
-  
-  vpc_id = module.vpc.vpc_id
-  persistance_subnets =  module.vpc.privateDB_subnets_ids
-  vpc_cidr = local.aws_vpc_network
-
-}
-

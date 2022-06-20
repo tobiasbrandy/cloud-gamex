@@ -11,5 +11,9 @@ locals {
   aws_ec2_type            = "t2.micro"
   aws_ec2_web_user_data   = "scripts/web_server_user_data.sh"
 
-  alb_cdn_secret_header = "X-Alb-Cdn-Secret-V1"
+  alb_cdn_secret_header   = "X-Alb-Cdn-Secret-V1"
+
+  # RDS
+  db_name                 = "gamexprimary"
+  db_port                 = 5432
 }

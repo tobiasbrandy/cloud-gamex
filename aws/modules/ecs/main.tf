@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "main" {
     name        = "${each.key}-container"
     image       = lookup(var.service_images, each.key, "invalid")
     essential   = true
-    # environment = var.container_environment
+    environment = var.environment
 
     portMappings = [{
       protocol      = "tcp"
