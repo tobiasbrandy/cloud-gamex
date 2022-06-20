@@ -18,13 +18,13 @@ data "aws_iam_role" "main" {
 }
 
 module "certificate" {
-  source = "./aws/modules/certificate"
+  source = "./modules/certificate"
 
   app_domain   = var.app_domain
 }
 
 module "vpc" {
-  source = "./aws/modules/vpc"
+  source = "./modules/vpc"
 
   cidr_block  = local.aws_vpc_network
   zones_count = local.aws_az_count
@@ -36,7 +36,7 @@ resource "aws_cloudfront_origin_access_identity" "cdn" {
 }
 
 module "static_site" {
-  source = "./aws/modules/static_site"
+  source = "./modules/static_site"
 
   src               = local.static_resources
   bucket_access_OAI = [aws_cloudfront_origin_access_identity.cdn.iam_arn]
@@ -47,7 +47,7 @@ module "services" {
 }
 
 module "registry" {
-  source = "./aws/modules/registry"
+  source = "./modules/registry"
 
   services          = module.services.definitions
   services_location = "services"
@@ -56,7 +56,7 @@ module "registry" {
 # Secreto entre CDN y public ALB
 // TODO(tobi): Rotar secreto (requiere una lambda)
 module "alb_cdn_secret" {
-  source = "./aws/modules/secret"
+  source = "./modules/secret"
 
   name_prefix = "alb-cdn-secret-"
   description = "Secret between CDN and ALB"
@@ -67,7 +67,7 @@ module "alb_cdn_secret" {
 }
 
 module "public_alb" {
-  source = "./aws/modules/alb"
+  source = "./modules/alb"
 
   name              = "app-alb"
   internal          = false
@@ -84,7 +84,7 @@ module "public_alb" {
 }
 
 module "internal_alb" {
-  source = "./aws/modules/alb"
+  source = "./modules/alb"
 
   name              = "discovery-alb"
   internal          = true
@@ -98,7 +98,7 @@ module "internal_alb" {
 }
 
 module "ecs" {
-  source = "./aws/modules/ecs"
+  source = "./modules/ecs"
 
   vpc_id                      = module.vpc.vpc_id
   vpc_cidr                    = module.vpc.vpc_cidr
@@ -122,7 +122,7 @@ module "ecs" {
 }
 
 module "rds" {
-  source = "./aws/modules/rds"
+  source = "./modules/rds"
 
   vpc_id      = module.vpc.vpc_id
   vpc_cidr    = module.vpc.vpc_cidr
@@ -134,7 +134,7 @@ module "rds" {
 }
 
 module "cdn" {
-  source = "./aws/modules/cdn"
+  source = "./modules/cdn"
 
   frontend_OAI          = aws_cloudfront_origin_access_identity.cdn
   frontend_origin_id    = "frontend"
@@ -152,7 +152,7 @@ module "cdn" {
 }
 
 module "dns" {
-  source = "./aws/modules/dns"
+  source = "./modules/dns"
 
   app_domain  = var.app_domain
   cdn         = module.cdn.distribution
