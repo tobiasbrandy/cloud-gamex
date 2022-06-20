@@ -1,5 +1,10 @@
 resource "aws_ecs_cluster" "main" {
   name = "services-cluster"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 resource "aws_cloudwatch_log_group" "fargate" {
