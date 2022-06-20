@@ -49,7 +49,7 @@ resource "aws_cloudfront_distribution" "main" {
   # #  prefix          = "myprefix"
   # }
   default_cache_behavior {
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = var.frontend_origin_id
     cache_policy_id  = data.aws_cloudfront_cache_policy.optimized.id
@@ -61,8 +61,8 @@ resource "aws_cloudfront_distribution" "main" {
   # Cache behavior with precedence 0
   ordered_cache_behavior {
     path_pattern     = var.api_path_pattern
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods   = ["GET", "HEAD"]
     cache_policy_id  = data.aws_cloudfront_cache_policy.disabled.id
     target_origin_id = var.api_origin_id
 

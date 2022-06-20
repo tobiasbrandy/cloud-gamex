@@ -107,6 +107,7 @@ module "ecs" {
   service_images              = module.registry.service_images
   task_role_arn               = data.aws_iam_role.main.arn
   execution_role_arn          = data.aws_iam_role.main.arn
+  logs_region                 = var.aws_region
   
   public_alb_target_groups    = module.public_alb.services_target_group
   internal_alb_target_groups  = module.internal_alb.services_target_group

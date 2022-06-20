@@ -2,6 +2,12 @@ resource "aws_ecs_cluster" "main" {
   name = "services-cluster"
 }
 
+resource "aws_cloudwatch_log_group" "fargate" {
+  name              = "fargate"
+  retention_in_days = 1
+}
+
+// TODO(tobi): Healthcheck
 resource "aws_ecs_task_definition" "main" {
   for_each = var.services
 
@@ -23,6 +29,15 @@ resource "aws_ecs_task_definition" "main" {
       protocol      = "tcp"
       containerPort = 80
     }]
+
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = aws_cloudwatch_log_group.fargate.id,
+        awslogs-region        = var.logs_region
+        awslogs-stream-prefix = "ecs"
+      }
+    }
   }])
 }
 

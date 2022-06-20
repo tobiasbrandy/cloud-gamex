@@ -15,11 +15,6 @@ resource "aws_alb_target_group" "services" {
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = var.vpc_id
-
-  # health_check {
-  #   path = each.value.health_check_path
-  #   protocol = each.value.protocol
-  # }
 }
 
 # resource "aws_alb_listener" "http" {
