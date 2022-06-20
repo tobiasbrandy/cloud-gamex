@@ -81,6 +81,8 @@ module "public_alb" {
 
   cdn_secret_header = local.alb_cdn_secret_header
   cdn_secret        = module.alb_cdn_secret.value
+
+  certificate_arn   = module.certificate.arn
 }
 
 module "internal_alb" {

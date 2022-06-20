@@ -1,11 +1,33 @@
 # TODO(tobi): Logging a S3
 
-data "aws_cloudfront_cache_policy" "disabled" {
-  name = "Managed-CachingDisabled"
-}
-
 data "aws_cloudfront_cache_policy" "optimized" {
   name = "Managed-CachingOptimized"
+}
+
+resource "aws_cloudfront_cache_policy" "disabled" {
+    name        = "api-no-caching"
+    min_ttl     = 0
+    max_ttl     = 1
+    default_ttl = 0
+    comment     = "Don't cache. Forward host header."
+
+    parameters_in_cache_key_and_forwarded_to_origin {
+
+      headers_config {
+        header_behavior = "whitelist"
+        headers {
+          items = ["Host"]
+        }
+      }
+
+      cookies_config {
+        cookie_behavior = "none"
+      }
+
+      query_strings_config {
+        query_string_behavior = "none"
+      }
+    }
 }
 
 resource "aws_cloudfront_distribution" "main" {
@@ -63,7 +85,7 @@ resource "aws_cloudfront_distribution" "main" {
     path_pattern     = var.api_path_pattern
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    cache_policy_id  = data.aws_cloudfront_cache_policy.disabled.id
+    cache_policy_id  = aws_cloudfront_cache_policy.disabled.id
     target_origin_id = var.api_origin_id
 
     min_ttl                = 0

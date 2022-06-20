@@ -45,3 +45,9 @@ variable "cdn_secret" {
   default     = null
 }
 
+variable "certificate_arn" {
+  description = "HTTPS certificate used by public alb listener"
+  type        = string
+  default     = null
+}
+
