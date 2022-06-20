@@ -79,8 +79,10 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
-  tags = {
-    Name = "cdn"
+  logging_config {
+    include_cookies = false
+    bucket          = aws_s3_bucket.logs.bucket_domain_name
+    prefix          = "access-logs-"
   }
 
   viewer_certificate {
