@@ -1,5 +1,3 @@
-# TODO(tobi): Que solo el cdn pueda acceder al lbfrontlbfront
-# TODO(tobi): Si se usa www hay problemas de permisos, la policy dice que solo cloudfront lee pega a site
 # TODO(tobi): Logging a S3
 
 data "aws_cloudfront_cache_policy" "disabled" {

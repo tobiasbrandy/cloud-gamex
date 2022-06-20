@@ -21,7 +21,5 @@ output "db_subnets_ids" {
 }
 
 output "privateDB_subnets_ids" {
-  value = [
-    for k, v in aws_subnet.db : v.id
-  ]
+  value = [for k, v in aws_subnet.db : v.id]
 }
