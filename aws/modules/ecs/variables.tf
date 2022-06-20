@@ -3,6 +3,11 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "vpc_cidr" {
+  description = "VPC CIDR"
+  type        = string
+}
+
 variable "app_subnets" {
   description = "Application subnets"
   type        = list(string)
@@ -28,10 +33,16 @@ variable "task_role_arn" {
   type        = string
 }
 
-variable "alb_target_groups" {
-  description = "Target groups of ALB redirecting to services"
+variable "public_alb_target_groups" {
+  description = "Target groups of public ALB redirecting to services"
   type        = map
 }
+
+variable "internal_alb_target_groups" {
+  description = "Target groups of internal ALB fro service communication"
+  type        = map
+}
+
 
 variable "environment" {
   description = "Environment variables available to all services. List of name/value pairs."

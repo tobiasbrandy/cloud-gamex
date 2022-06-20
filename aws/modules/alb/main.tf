@@ -70,8 +70,11 @@ resource "aws_alb_listener_rule" "services" {
   
   condition {
     path_pattern {
-      // TODO(tobi): Arreglar
-      values = var.internal ? ["${var.path_prefix}/${each.key}", "${var.path_prefix}/${each.key}/*", "/${each.key}", "/${each.key}/*"] : ["${var.path_prefix}/${each.key}", "${var.path_prefix}/${each.key}/*"]
+      # Solo agregar los dos ultimos valores (los de la api interna) si es internal
+      values = concat(
+        ["${var.public_api_prefix}/${each.key}", "${var.public_api_prefix}/${each.key}/*"],
+        var.internal ? ["/${each.key}", "/${each.key}/*"] : []
+      )
     }
   }
 
@@ -105,26 +108,24 @@ resource "aws_security_group" "ecs_lb" {
   name   = var.name
   vpc_id = var.vpc_id
 
-  # ingress {
-  #   from_port         = 0
-  #   to_port           = 0
-  #   protocol          = "icmp"
-  #   # cidr_blocks       = [var.internal ? var.vpc_cidr : "0.0.0.0/0"]
-  #   cidr_blocks       = ["0.0.0.0/0"]
-  # }
-
-  # ingress {
-  #   from_port         = 0
-  #   to_port           = 0
-  #   protocol          = "tcp"
-  #   # cidr_blocks       = [var.internal ? var.vpc_cidr : "0.0.0.0/0"] // TODO(tobi)
-  #   cidr_blocks       = ["0.0.0.0/0"]
-  # }
-
   ingress {
     from_port         = 0
     to_port           = 0
-    protocol          = "-1"
+    protocol          = "icmp"
+    cidr_blocks       = [var.internal ? var.vpc_cidr : "0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port         = 80
+    to_port           = 80
+    protocol          = "tcp"
+    cidr_blocks       = [var.internal ? var.vpc_cidr : "0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port         = 443
+    to_port           = 443
+    protocol          = "tcp"
     cidr_blocks       = ["0.0.0.0/0"]
   }
 

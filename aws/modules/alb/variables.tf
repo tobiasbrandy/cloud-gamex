@@ -28,8 +28,8 @@ variable "services" {
   type        = map(map(any))
 }
 
-variable "path_prefix" {
-  description = "Path prefix for all services"
+variable "public_api_prefix" {
+  description = "Path prefix for the public api of services"
   type        = string
 }
 

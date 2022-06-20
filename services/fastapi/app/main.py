@@ -32,7 +32,7 @@ def api_call2():
 @app.get("/api/fastapi/echo")
 def echo():
   try:
-    return requests.get("http://internal-discovery-alb-1248751842.us-east-1.elb.amazonaws.com/fastapi").text
+    return requests.get("http://services.private.cloud.com/fastapi").text
   except Exception as e:
     return str(e)
 
@@ -40,7 +40,7 @@ def echo():
 @app.get("/api/fastapi/echo2")
 def echo2():
   try:
-    return requests.get("http://internal-discovery-alb-1248751842.us-east-1.elb.amazonaws.com/api/fastapi").text
+    return requests.get("http://services.private.cloud.com/api/fastapi").text
   except Exception as e:
     return str(e)
 

@@ -77,13 +77,13 @@ module "public_alb" {
   subnets           = module.vpc.public_subnets_ids
 
   services          = module.services.definitions
-  path_prefix       = "/api"
+  public_api_prefix = local.public_api_prefix
 
   cdn_secret_header = local.alb_cdn_secret_header
   cdn_secret        = module.alb_cdn_secret.value
 }
 
-module "service_discovery_alb" {
+module "internal_alb" {
   source = "./aws/modules/alb"
 
   name              = "discovery-alb"
@@ -94,20 +94,22 @@ module "service_discovery_alb" {
   subnets           = module.vpc.app_subnets_ids
 
   services          = module.services.definitions
-  path_prefix       = "/api"
+  public_api_prefix = local.public_api_prefix
 }
 
 module "ecs" {
   source = "./aws/modules/ecs"
 
-  vpc_id                = module.vpc.vpc_id
-  app_subnets           = module.vpc.app_subnets_ids
-  services              = module.services.definitions
-  service_images        = module.registry.service_images
-  task_role_arn         = data.aws_iam_role.main.arn
-  execution_role_arn    = data.aws_iam_role.main.arn
+  vpc_id                      = module.vpc.vpc_id
+  vpc_cidr                    = module.vpc.vpc_cidr
+  app_subnets                 = module.vpc.app_subnets_ids
+  services                    = module.services.definitions
+  service_images              = module.registry.service_images
+  task_role_arn               = data.aws_iam_role.main.arn
+  execution_role_arn          = data.aws_iam_role.main.arn
   
-  alb_target_groups     = module.public_alb.services_target_group
+  public_alb_target_groups    = module.public_alb.services_target_group
+  internal_alb_target_groups  = module.internal_alb.services_target_group
 
   environment = [
     {name = "DB_USER",      value = var.db_user},
@@ -139,7 +141,7 @@ module "cdn" {
 
   api_origin_id         = "api"
   api_domain_name       = module.public_alb.main.dns_name
-  api_path_pattern      = "/api/*"
+  api_path_pattern      = "${local.public_api_prefix}/*"
 
   aliases               = [var.app_domain, "*.${var.app_domain}"]
   certificate_arn       = module.certificate.arn
@@ -156,6 +158,6 @@ module "dns" {
 
   internal_vpc_domain = "private.cloud.com"
   vpc_id              = module.vpc.vpc_id
-  services_alb        = module.service_discovery_alb.main
+  services_alb        = module.internal_alb.main
   services_alb_domain = "services.private.cloud.com"
 }

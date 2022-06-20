@@ -27,32 +27,6 @@ resource "aws_ecs_task_definition" "main" {
 }
 
 # Nota: Ideal hacer el service descovery con esto, pero no tenemos permisos :(((
-# resource "aws_service_discovery_private_dns_namespace" "discovery" {
-#   name        = "cloud.tobiasbrandy.com"
-#   vpc         = var.vpc_id
-# }
-
-# resource "aws_service_discovery_service" "discovery" {
-#   for_each = var.services
-
-#   name = each.key
-
-#   dns_config {
-#     namespace_id = aws_service_discovery_private_dns_namespace.discovery.id
-
-#     dns_records {
-#       ttl  = 10
-#       type = "A"
-#     }
-
-#     routing_policy = "MULTIVALUE"
-#   }
-
-#   health_check_custom_config {
-#     failure_threshold = 1
-#   }
-# }
-
 resource "aws_ecs_service" "main" {
   for_each = var.services
 
@@ -72,43 +46,45 @@ resource "aws_ecs_service" "main" {
   }
   
   load_balancer {
-    target_group_arn = var.alb_target_groups[each.key].arn
+    target_group_arn = var.public_alb_target_groups[each.key].arn
     container_name   = "${each.key}-container"
     container_port   = 80
   }
 
-  # service_registries {
-  #   registry_arn = aws_service_discovery_service.discovery[each.key].arn
-  # }
+  load_balancer {
+    target_group_arn = var.internal_alb_target_groups[each.key].arn
+    container_name   = "${each.key}-container"
+    container_port   = 80
+  }
   
-  # lifecycle {
-  #   ignore_changes = [task_definition, desired_count]
-  # }
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
 }
 
 resource "aws_security_group" "ecs_tasks" {
   name   = "ecs-sg"
   vpc_id = var.vpc_id
 
-  # ingress {
-  #   protocol         = "tcp"
-  #   from_port        = 0
-  #   to_port          = 0
-  #   cidr_blocks      = ["0.0.0.0/0"]
-  # }
-
-  # ingress {
-  #   protocol         = "tcp"
-  #   from_port        = 443
-  #   to_port          = 443
-  #   cidr_blocks      = ["0.0.0.0/0"]
-  # }
+    ingress {
+    from_port         = 0
+    to_port           = 0
+    protocol          = "icmp"
+    cidr_blocks       = [var.vpc_cidr]
+  }
 
   ingress {
-    protocol         = "-1"
-    from_port        = 0
-    to_port          = 0
-    cidr_blocks      = ["0.0.0.0/0"]
+    protocol         = "tcp"
+    from_port        = 80
+    to_port          = 80
+    cidr_blocks      = [var.vpc_cidr]
+  }
+
+  ingress {
+    protocol         = "tcp"
+    from_port        = 443
+    to_port          = 443
+    cidr_blocks      = [var.vpc_cidr]
   }
 
   egress {
