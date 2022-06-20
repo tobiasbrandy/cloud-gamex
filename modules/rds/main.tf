@@ -42,9 +42,9 @@ resource "aws_db_instance" "primary_db" {
   backup_retention_period = 5
 
   storage_encrypted       = true
-  kms_key_id              = aws_kms_key.db.id
+  kms_key_id              = aws_kms_key.db.arn
   performance_insights_enabled = true
-  performance_insights_kms_key_id = aws_kms_key.db.id
+  performance_insights_kms_key_id = aws_kms_key.db.arn
 
   skip_final_snapshot     = true
   apply_immediately       = true
@@ -67,9 +67,9 @@ resource "aws_db_instance" "read_replica" {
   backup_retention_period = 0
 
   storage_encrypted       = true
-  kms_key_id              = aws_kms_key.db.id
+  kms_key_id              = aws_kms_key.db.arn
   performance_insights_enabled = true
-  performance_insights_kms_key_id = aws_kms_key.db.id
+  performance_insights_kms_key_id = aws_kms_key.db.arn
 
   skip_final_snapshot     = true
   apply_immediately       = true
