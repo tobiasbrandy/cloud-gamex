@@ -6,7 +6,7 @@ Arquitectura basada en microservicios utilizando ECS completamente desarrollada 
 ## Autores
 
 - [Brandy Tobias](https://github.com/tobiasbrandy)
-- [Legammare Joaquin](https://github.com/JoacoLega)
+- [Legammare Joaquin](https://github.com/JLegammare)
 - [Manfredi Agustin](https://github.com/imanfredi)
 - [Silvatici Gabriel](https://github.com/gsilvatici)
 
