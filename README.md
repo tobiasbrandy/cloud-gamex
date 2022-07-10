@@ -51,3 +51,7 @@ El backend es el sistema que tenemos para almacenar el state de terraform genera
 
 Tener en cuenta que el proceso puede durar varios minutos, y que una vez finalizado puede tomar unos minutos hasta que el sitio se pueda acceder.
 
+## Diagrama de Arquitectura
+
+![Cloud - K8](https://user-images.githubusercontent.com/58312834/178128606-1b74ea94-905c-410b-89d9-d18462c7d5a6.jpeg)
+
