@@ -52,14 +52,15 @@ async function getGames(){
             let li = document.createElement('li');
             let game = document.createElement('span');
             game.innerHTML += item;
-            game.addEventListener('click',downloadGame(item))
+            
+            game.addEventListener('click',function(){
+                downloadGame(item)
+            });
+
             ul.appendChild(li);
         });
-
-        users_list.append(ul)
-
+        games_list.append(ul)
     })
-    
     .catch(error =>console.log(error));
 }
 
