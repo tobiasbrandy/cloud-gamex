@@ -34,7 +34,7 @@ def download_file(file):
 def get_files():
     try:
         file_names = []
-        result = boto3.resource('s3').list_objects_v2(Bucket=AWS_BINARIES_BUCKET)
+        result = boto3.client('s3').list_objects_v2(Bucket=AWS_BINARIES_BUCKET)
         for item in result['Contents']:
            file_names.append(item['Key'])
 
