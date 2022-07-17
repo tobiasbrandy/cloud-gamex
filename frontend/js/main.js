@@ -53,8 +53,11 @@ async function getGames(){
             let game = document.createElement('span');
             li.append(game)
             game.innerHTML += item;
+            game.style="text-decoration:underline";
+            game.class="game_link";
+
             game.addEventListener('click',function(){
-                downloadGame(item)
+                downloadGame(item);
             });
             ul.appendChild(li);
         });
