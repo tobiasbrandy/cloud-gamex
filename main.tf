@@ -121,7 +121,7 @@ module "binaries_bucket" {
 
   name            = "binaries"
   iam_role_arn    = data.aws_iam_role.main.arn
-  allowed_actions = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+  allowed_actions = ["s3:ListBucket", "s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
 }
 
 module "waf" {
