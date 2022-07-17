@@ -54,7 +54,7 @@ async function getGames(){
             li.append(game)
             game.innerHTML += item;
             game.style="text-decoration:underline";
-            game.class="game_link";
+            game.classList.add("game_link");
 
             game.addEventListener('click',function(){
                 downloadGame(item);
