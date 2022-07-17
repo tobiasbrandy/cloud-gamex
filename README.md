@@ -53,5 +53,5 @@ Tener en cuenta que el proceso puede durar varios minutos, y que una vez finaliz
 
 ## Diagrama de Arquitectura
 
-![Cloud - K8](https://user-images.githubusercontent.com/58312834/178128606-1b74ea94-905c-410b-89d9-d18462c7d5a6.jpeg)
+![Diagrama](https://user-images.githubusercontent.com/58312834/179426746-6f84eb45-0761-4222-9820-119d95934d6a.jpeg)
 
