@@ -40,7 +40,7 @@ async function createUser(){
 }
 
 async function getGames(){
-    fetch('/api/balde')
+    fetch('/api/balde/games')
     .then(response=>response.json())
     .then(games => {
         console.log(games)
@@ -65,7 +65,7 @@ async function getGames(){
 
 async function downloadGame(game){
 
-    fetch('/api/balde/'+game)
+    fetch('/api/balde/games/'+game)
     .then( res => res.blob() )
     .then( blob => {
         var file = window.URL.createObjectURL(blob);

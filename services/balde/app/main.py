@@ -22,7 +22,7 @@ def home():
 def private_home():
     return "Balde privately says: Hello World!"
 
-@app.get("/api/balde/{file}")
+@app.get("/api/balde/games/{file}")
 def download_file(file):
     try:
         obj: Dict[str, Any] = boto3.resource('s3').Object(AWS_BINARIES_BUCKET, file).get()
@@ -30,8 +30,8 @@ def download_file(file):
     except Exception as e:
         return Response(e, status_code=400)
 
-@app.get("/api/balde")
-def get_files(file):
+@app.get("/api/balde/games")
+def get_files():
     try:
         file_names = []
         result = boto3.resource('s3').list_objects_v2(Bucket=AWS_BINARIES_BUCKET)
@@ -43,7 +43,7 @@ def get_files(file):
     except Exception as e:
         return Response(e, status_code=400)
 
-@app.post("/api/balde")
+@app.post("/api/balde/games")
 def upload_file(file: UploadFile):
     try:
         boto3.client('s3').upload_fileobj(
