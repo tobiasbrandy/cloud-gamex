@@ -45,16 +45,15 @@ def get_files(file):
 
 @app.post("/api/balde")
 def upload_file(file: UploadFile):
-    return file.filename
-    # try:
-    #     boto3.client('s3').upload_fileobj(
-    #         file.file,
-    #         AWS_BINARIES_BUCKET,
-    #         file.filename,
-    #         ExtraArgs={"ContentType": file.content_type}
-    #     )
-    # except Exception as e:
-    #     return Response(e, status_code=400)
+    try:
+        boto3.client('s3').upload_fileobj(
+            file.file,
+            AWS_BINARIES_BUCKET,
+            file.filename,
+            ExtraArgs={"ContentType": file.content_type}
+        )
+    except Exception as e:
+        return Response(e, status_code=400)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
