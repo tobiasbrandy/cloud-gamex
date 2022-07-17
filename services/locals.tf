@@ -15,5 +15,9 @@ locals {
     db = {
       version = "1.0.7"
     }
+
+    balde = {
+      version = "1.0.11"
+    }
   }
 }
