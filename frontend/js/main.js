@@ -51,12 +51,11 @@ async function getGames(){
         games.forEach(item => {
             let li = document.createElement('li');
             let game = document.createElement('span');
+            li.append(game)
             game.innerHTML += item;
-            
             game.addEventListener('click',function(){
                 downloadGame(item)
             });
-
             ul.appendChild(li);
         });
         games_list.append(ul)
