@@ -53,5 +53,6 @@ Tener en cuenta que el proceso puede durar varios minutos, y que una vez finaliz
 
 ## Diagrama de Arquitectura
 
-![Diagrama](https://user-images.githubusercontent.com/58312834/179426746-6f84eb45-0761-4222-9820-119d95934d6a.jpeg)
+![Diagrama](https://user-images.githubusercontent.com/58312834/179427886-eedaf028-d508-47ed-abe1-2c982c2166a4.jpeg)
+
 
