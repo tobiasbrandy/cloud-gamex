@@ -17,7 +17,7 @@ locals {
     }
 
     balde = {
-      version = "1.0.12"
+      version = "1.1.0"
     }
   }
 }
