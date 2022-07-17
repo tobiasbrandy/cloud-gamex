@@ -35,7 +35,43 @@ async function createUser(){
         })
         .then(response=>console.log(response))
         .catch(error => console.log(error))
-    }
+    } 
 
 }
 
+async function getGames(){
+    fetch('/api/balde')
+    .then(response=>response.json())
+    .then(games => {
+        console.log(games)
+        let games_list = document.getElementById('games_list');
+        games_list.innerHTML = ''
+
+        let ul = document.createElement('ul');
+        games.forEach(item => {
+            let li = document.createElement('li');
+            let game = document.createElement('span');
+            game.innerHTML += item;
+            game.addEventListener('click',downloadGame(item))
+            ul.appendChild(li);
+        });
+
+        users_list.append(ul)
+
+    })
+    
+    .catch(error =>console.log(error));
+}
+
+async function downloadGame(game){
+
+    fetch('/api/balde/'+game)
+    .then( res => res.blob() )
+    .then( blob => {
+        var file = window.URL.createObjectURL(blob);
+        window.location.assign(file);
+    })
+    .catch(error => console.log(error));
+
+
+}

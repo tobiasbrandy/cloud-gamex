@@ -30,6 +30,19 @@ def download_file(file):
     except Exception as e:
         return Response(e, status_code=400)
 
+@app.get("/api/balde")
+def get_files(file):
+    try:
+        file_names = []
+        result = boto3.resource('s3').list_objects_v2(Bucket=AWS_BINARIES_BUCKET)
+        for item in result['Contents']:
+           file_names.append(item['Key'])
+
+        return file_names
+        
+    except Exception as e:
+        return Response(e, status_code=400)
+
 @app.post("/api/balde")
 def upload_file(file: UploadFile):
     return file.filename

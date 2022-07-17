@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>GameX Home</title>
+    <title>GameX - Games</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -80,13 +80,13 @@
                         <h1 class="m-0 display-4 text-primary"><span class="text-secondary">Game</span>X</h1>
                     </a>
                     <div class="navbar-nav py-0">
-                        <a href="index.html" class="nav-item nav-link active">Home</a>
+                        <a href="index.html" class="nav-item nav-link">Home</a>
                     </div>
                     <div class="navbar-nav py-0">
                         <a href="users.html" class="nav-item nav-link">Users</a>
                     </div>
                     <div class="navbar-nav mr-auto py-0">
-                        <a href="games.html" class="nav-item nav-link">Games</a>
+                        <a href="games.html" class="nav-item nav-link active">Games</a>
                     </div>
                 </div>
             </nav>
@@ -100,13 +100,15 @@
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-lg-7">
-                    <h1 class="section-title position-relative text-center mb-5">WELCOME TO GAMEX</h1>
+                    <h1 class="section-title position-relative text-center mb-5">GAMES</h1>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-12">
-                    <h2>La mejor pagina de Juegos desde 2021, ahora con infraestructura en la nube ;)</h2>
-                <div id="users_list"class="col-lg-4 py-5">  
+                <button onclick="getGames()">
+                    GET GAMES
+                </button>
+                <div id="games_list"class="col-lg-4 py-5">  
                 </div>
             </div>
             </div>
@@ -115,6 +117,27 @@
     <!-- GET USUARIOS-->
 
 
+    <!--CREAR USUARIO-->
+    <div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <h1 class="section-title position-relative text-center mb-5">UPLOAD GAME</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                <form action="/api/balde" method="post" enctype="multipart/form-data">
+                    <label>Select a file to upload: <input type="file" /></label>
+                    <button type="submit">Upload</button>
+                </form>
+            </div> 
+        </div>
+    </div>
+</div>
+<!-- GET USUARIOS-->
+
+   
 
 
     <!-- Footer Start -->
@@ -145,6 +168,7 @@
     <!-- Back to Top -->
     <a href="#" class="btn btn-secondary px-2 back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
+
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
@@ -153,6 +177,10 @@
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="lib/isotope/isotope.pkgd.min.js"></script>
     <script src="lib/lightbox/js/lightbox.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="mail/jqBootstrapValidation.min.js"></script>
+    <script src="mail/contact.js"></script>
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
